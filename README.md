@@ -1,4 +1,4 @@
-# Factory AI Droid evaluation — CSEE Code Factory
+# Factory AI Droid Evaluation — Six-Issue Benchmark
 
 **Six-issue, evidence-based assessment of Factory AI against Khiem Nguyen's Warp Factories benchmark**  
 **Experiment:** 8–9 November 2026 · **Report:** 9 November 2026 · **Status:** case study, not a controlled provider ranking
@@ -24,14 +24,14 @@
 
 | Where to start | What you will find |
 |---|---|
-| **[Full technical comparison](docs/factory-vs-warp.md)** | Detailed correctness, autonomy, tests, model/cost caveats, issue-level technical review and CSEE implications |
+| **[Full technical comparison](docs/factory-vs-warp.md)** | Detailed correctness, autonomy, tests, model/cost caveats, issue-level technical review and agent-architecture implications |
 | **[Per-issue evaluation](eval/README.md)** | Six short case files linking Factory PRs, underlying diffs and corresponding Warp benchmark issues |
 | **[Scorecard](eval/scorecard.csv)** | Machine-readable initial/final rubric outcomes and intervention labels |
 | **[Usage dataset](data/factory-usage-by-issue.csv)** | Six actual reported token aggregates, exact available splits and provenance markers |
 | **[Methodology and limitations](eval/methodology.md)** | Definition of success, exclusion rules, how time/cost are interpreted |
 | **[Evidence index](evidence/README.md)** | Sanitized code diffs supplied for PRs #8–12; #1 diff unavailable |
 | **[Verification script](scripts/validate_results.py)** | Checks consistency of public aggregate dataset, scorecard and provided diff filenames |
-| **[Architecture implications](docs/code-factory-recommendations.md)** | Concrete Refine → Implement → Validate → Review → Retry gates |
+| **[Architecture implications](docs/autonomous-agent-architecture.md)** | Concrete Refine → Implement → Validate → Review → Retry gates |
 
 ### Issues and outcomes
 
@@ -60,10 +60,10 @@ flowchart LR
 
 - **Original benchmark and Warp evaluation:** [HawKhiem/warp-factory-sandbox](https://github.com/HawKhiem/warp-factory-sandbox) — benchmark design, test application, runbook, answer key and Warp scorecard are Khiem Nguyen's work. This repository does **not** claim to reproduce or re-run Warp.
 - **Factory agent's implementation PRs:** [Factory experiment code repository](https://github.com/anushree-goyal/factory-sandbox-factory) (private at evaluation time; access to linked PRs may need permission).
-- **This repository:** Factory results, evidence review and cross-workflow comparison compiled for the CSEE Code Factory project.
+- **This repository:** Factory results, evidence review and cross-workflow comparison documented in this independent comparative case study.
 
 ## Reproducibility and privacy
 
-Run `python3 scripts/validate_results.py` to check that the **published aggregates and scorecard** are internally consistent. This is **not** a replay of provider calls or the complete Node.js test suite. The original request-level OpenRouter exports, Factory session IDs, dashboard screenshot and source attribution script are deliberately **not included in this publication-oriented edition**. Their checked source hashes and limitations are discussed in [data provenance](eval/data-provenance.md). The complete raw evidence package should be retained separately for authorized CSEE reviewers.
+Run `python3 scripts/validate_results.py` to check that the **published aggregates and scorecard** are internally consistent. This is **not** a replay of provider calls or the complete Node.js test suite. The original request-level OpenRouter exports, Factory session IDs, dashboard screenshot and source attribution script are deliberately **not included in this publication-oriented edition**. Their checked source hashes and limitations are discussed in [data provenance](eval/data-provenance.md). The complete raw evidence package should be retained separately for authorized reproducibility audits.
 
-**Attribution:** Six-issue task design, sandbox, Warp benchmark and original evaluation by [Khiem Nguyen](https://github.com/HawKhiem); Factory Droid experiments and comparative analysis performed for CSEE Code Factory. Product-specific behavior described here is limited to these observed configurations and dates.
+**Attribution:** Six-issue task design, sandbox, Warp benchmark and original evaluation by [Khiem Nguyen](https://github.com/HawKhiem); Factory Droid experiments and comparative analysis documented in this repository. Product-specific behavior described here is limited to these observed configurations and dates.

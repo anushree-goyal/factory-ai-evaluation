@@ -28,6 +28,6 @@ No measured baseline or before/after latency/memory evidence. A functional test 
 
 Warp explicitly requested scope, then ran a load experiment and recommended no code change under the observed conditions. See [Warp's original scorecard](https://github.com/HawKhiem/warp-factory-sandbox/blob/main/eval/scorecard.csv); the Warp run was not independently repeated for this report.
 
-## Lesson for CSEE
+## Generalizable lesson
 
 The ability to pause, clarify and recommend no-op is part of correctness for ambiguous issues.

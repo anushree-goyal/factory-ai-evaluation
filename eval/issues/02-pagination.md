@@ -28,6 +28,6 @@ Patch reviewed, but suite execution not independently reproduced from the suppli
 
 Warp also corrected the root cause and reportedly added broader HTTP-level red/green tests for defaults and later pages. See [Warp's original scorecard](https://github.com/HawKhiem/warp-factory-sandbox/blob/main/eval/scorecard.csv); the Warp run was not independently repeated for this report.
 
-## Lesson for CSEE
+## Generalizable lesson
 
 Regression tests should exercise the API contract as well as a helper function.

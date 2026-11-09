@@ -1,4 +1,4 @@
-# Implications for CSEE Code Factory
+# Architecture recommendations for autonomous coding agents
 
 The six tasks suggest that task refinement and validation gates matter more than counting generated PRs. This is a **small qualitative case study**, not a validated production architecture.
 

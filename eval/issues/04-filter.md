@@ -28,6 +28,6 @@ Tests do not directly prove cross-page filtered totals and exhibit fixture/test-
 
 Warp reportedly exercised page-two totals and multiple invalid parameter cases against the baseline and patch. See [Warp's original scorecard](https://github.com/HawKhiem/warp-factory-sandbox/blob/main/eval/scorecard.csv); the Warp run was not independently repeated for this report.
 
-## Lesson for CSEE
+## Generalizable lesson
 
 Tests must establish filtered totals and independence from prior test execution order.

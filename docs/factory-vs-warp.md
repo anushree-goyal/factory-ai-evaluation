@@ -1,7 +1,7 @@
 # Factory AI Droid vs. Warp Factories
-## Evidence-based comparison on CSEE's six-issue software-factory benchmark
+## Evidence-based comparison using a six-issue software-factory benchmark
 
-**CSEE Code Factory — technical evaluation**  
+**Technical evaluation**  
 **Prepared:** 9 November 2026  
 **Experiment windows:** Warp, 26 October 2026; Factory AI, 8–9 November 2026 (Europe/Berlin)  
 **Scope:** Six issues in Khiem Nguyen's Node.js Todo API sandbox, evaluated from the supplied Factory data package and the original public Warp benchmark.  
@@ -142,7 +142,7 @@ For #1–5 only: **2,153,030 input tokens** (including **1,753,600 cached prompt
 - **Not established:** A token ratio between providers. Warp did **not** publish task-specific token counts in the original scorecard.
 - **Sensitivity / selection:** The stated 3,017,684 tokens **exclude** 318,507 tokens from aborted #6 and 66,822 unassigned shared-key tokens. They are retained as a separate audit trail, not silently attributed to selected successes. An end-to-end *all-attempts* assessment would need a broader, consistently logged denominator across both providers.
 
-## 7. Implications for CSEE's Code Factory architecture
+## 7. Implications for autonomous coding-agent architecture
 
 The benchmark suggests prioritizing **workflow control and evidence of correctness** over producing more code or PRs. A viable design is:
 
@@ -180,7 +180,7 @@ Record outcome, duration, tokens, cost, interventions, and later regressions
 
 ## 8. Recommended next evaluation
 
-To turn this indicative case study into a stronger Code Factory architecture decision:
+To turn this indicative case study into a stronger architecture evaluation:
 
 1. **Freeze a versioned task set and rubric.** Start every trial at the same `baseline` commit. Publish unambiguous expected behavior, including what counts as justified refusal/no-op; score task outcomes independently of whether a PR was opened.
 2. **Repeat each task** (preferably at least three times per configuration) and report each trial, not just a best or selected successful one. Capture failures from provider errors, rate limits, abandoned runs and repair retries using both *attempt-level* and *task-level* denominators.
@@ -195,7 +195,7 @@ A small recommended reporting schema per `(provider, config, issue, trial)` is: 
 
 **Limitations.** Six deliberately small tasks in one Node.js sandbox; one principal run per issue/provider; different dates, models and agent topologies; Warp #3/#4 combined; Factory #3 continued after a gap; incomplete or differently defined timing; Factory's private PRs not independently fetched; no Factory #1 patch; no full Factory CI replay; token attribution by time windows; user-confirmed rather than timestamp-verified #6 export; no Warp token ledger; free-model rate limits; pricing boundaries not equal; no direct proof of large-codebase reliability, long-term maintenance quality, general statistical advantage, or return on investment.
 
-**Conclusion.** On this specific rubric, **Warp showed stronger observed specification handling and documented validation**, especially on the ambiguous performance request and the flaky test. **Factory AI Droid showed meaningful autonomous implementation ability**, including acceptable patches for ordinary tasks and a successful human-guided repair on the hardest correctness issue, at **zero recorded OpenRouter API charge** using the free model. Yet #5 shows the cost of an undetected first-attempt defect, and #6 shows why a plausible optimization is not equivalent to resolving a user problem. For CSEE, the key architectural lesson is to build a factory that can **refine, measure, validate, review, retry within limits, and decline unnecessary changes**—then evaluate it on reproducible task outcomes rather than PR counts or incomparable billing figures.
+**Conclusion.** On this specific rubric, **Warp showed stronger observed specification handling and documented validation**, especially on the ambiguous performance request and the flaky test. **Factory AI Droid showed meaningful autonomous implementation ability**, including acceptable patches for ordinary tasks and a successful human-guided repair on the hardest correctness issue, at **zero recorded OpenRouter API charge** using the free model. Yet #5 shows the cost of an undetected first-attempt defect, and #6 shows why a plausible optimization is not equivalent to resolving a user problem. The key architectural lesson is to design an agentic workflow that can **refine, measure, validate, review, retry within limits, and decline unnecessary changes**—then evaluate it on reproducible task outcomes rather than PR counts or incomparable billing figures.
 
 ---
 

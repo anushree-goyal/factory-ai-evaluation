@@ -28,6 +28,6 @@ No PR #7 patch supplied. Test/merge outcomes are experimenter-reported, not inde
 
 Warp made a README-only fix, noted the unrelated flaky test, and avoided expanding scope. See [Warp's original scorecard](https://github.com/HawKhiem/warp-factory-sandbox/blob/main/eval/scorecard.csv); the Warp run was not independently repeated for this report.
 
-## Lesson for CSEE
+## Generalizable lesson
 
 No code patch is included for #1; the PR is linked but may require access to the private Factory experiment repository.

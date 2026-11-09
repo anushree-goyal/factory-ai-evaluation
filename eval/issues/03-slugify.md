@@ -28,6 +28,6 @@ Factory patch does not cover all existing-hyphen or trimming cases. The initial 
 
 Warp wrote broader edge-case tests but its published review still disclosed Unicode corner cases it missed. See [Warp's original scorecard](https://github.com/HawKhiem/warp-factory-sandbox/blob/main/eval/scorecard.csv); the Warp run was not independently repeated for this report.
 
-## Lesson for CSEE
+## Generalizable lesson
 
 A broad text-processing fix needs adversarial Unicode cases and a documented character-set contract.

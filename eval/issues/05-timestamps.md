@@ -28,6 +28,6 @@ First attempt is a failure. Patch inspection supports the revised algorithm but 
 
 Warp used a deterministic mocked-clock test strategy and reported 40/40 runs, with no corrective human intervention. See [Warp's original scorecard](https://github.com/HawKhiem/warp-factory-sandbox/blob/main/eval/scorecard.csv); the Warp run was not independently repeated for this report.
 
-## Lesson for CSEE
+## Generalizable lesson
 
 A retry only improves eventual success; it must never retroactively count as first-attempt success.
