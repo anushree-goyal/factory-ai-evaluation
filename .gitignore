@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.env
+.env.*
+*.log
+*.sqlite
+
+# Restricted source exports should never be committed to the publication edition.
+private-evidence/
+source-data/
+derived-data/
+raw-exports/
+*.key
+*.pem
