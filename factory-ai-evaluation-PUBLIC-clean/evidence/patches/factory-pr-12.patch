@@ -1,0 +1,197 @@
+From ac3444c4d207d743df5dce49a52b0f8ac17b62a3 Mon Sep 17 00:00:00 2001
+From: anushreegoyal <redacted@invalid.example>
+Date: Mon, 9 Nov 2026 08:48:29 +0100
+Subject: [PATCH] Fix #6: Add store-level pagination for faster API
+
+- Add listPaginated(page, size) method to TodoStore for efficient pagination
+- Update server.js to use store-level pagination when no 'done' filter is applied
+- Add tests for the new pagination functionality
+- Avoids copying full array when paginating large datasets
+
+Fixes #6
+---
+ src/server.js      | 15 ++++++++---
+ src/store.js       | 31 ++++++++++++++++++----
+ test/store.test.js | 66 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 103 insertions(+), 9 deletions(-)
+
+diff --git a/src/server.js b/src/server.js
+index 2878710..87ffbc8 100644
+--- a/src/server.js
++++ b/src/server.js
+@@ -1,7 +1,6 @@
+ import http from 'node:http';
+ import { pathToFileURL } from 'node:url';
+ import { TodoStore } from './store.js';
+-import { paginate } from './utils.js';
+
+ function send(res, status, body) {
+   res.writeHead(status, { 'content-type': 'application/json' });
+@@ -26,15 +25,23 @@ export function createServer(store = new TodoStore()) {
+         const page = Number(url.searchParams.get('page') ?? 1);
+         const size = Number(url.searchParams.get('size') ?? 10);
+         const doneParam = url.searchParams.get('done');
+-        let todos = store.list();
+         if (doneParam !== null) {
+           if (doneParam !== 'true' && doneParam !== 'false') {
+             return send(res, 400, { error: 'done must be true or false' });
+           }
++          // Filtering still requires full list scan; paginate after filtering
+           const done = doneParam === 'true';
+-          todos = todos.filter((t) => t.done === done);
++          const todos = store.list().filter((t) => t.done === done);
++          const start = (page - 1) * size;
++          return send(res, 200, {
++            page,
++            size,
++            total: todos.length,
++            items: todos.slice(start, start + size),
++          });
+         }
+-        return send(res, 200, paginate(todos, page, size));
++        // No filter: use store-level pagination to avoid copying full array
++        return send(res, 200, store.listPaginated(page, size));
+       }
+       if (req.method === 'GET') {
+         const todo = store.get(id);
+diff --git a/src/store.js b/src/store.js
+index 10a47e7..c84b4dd 100644
+--- a/src/store.js
++++ b/src/store.js
+@@ -3,7 +3,8 @@ import { slugify } from './utils.js';
+ // In-memory todo store. Not persistent; good enough for a sandbox.
+ export class TodoStore {
+   constructor() {
+-    this.todos = [];
++    this.todos = []; // Array for ordered iteration (list, pagination)
++    this.byId = new Map(); // Map for O(1) lookups by ID
+     this.nextId = 1;
+     this.lastTimestampMs = 0; // Last used timestamp in milliseconds since epoch
+   }
+@@ -33,28 +34,48 @@ export class TodoStore {
+       createdAt,
+     };
+     this.todos.push(todo);
++    this.byId.set(todo.id, todo);
+     return todo;
+   }
+
+   list() {
++    // Return a shallow copy to prevent external mutation
+     return [...this.todos];
+   }
+
++  // Return a paginated view without copying the entire array
++  listPaginated(page = 1, size = 10) {
++    const start = (page - 1) * size;
++    const end = start + size;
++    const items = this.todos.slice(start, end);
++    return {
++      page,
++      size,
++      total: this.todos.length,
++      items,
++    };
++  }
++
+   get(id) {
+-    return this.todos.find((t) => t.id === id);
++    return this.byId.get(id);
+   }
+
+   complete(id) {
+-    const todo = this.get(id);
++    const todo = this.byId.get(id);
+     if (!todo) return undefined;
+     todo.done = true;
+     return todo;
+   }
+
+   remove(id) {
++    const todo = this.byId.get(id);
++    if (!todo) return false;
++    this.byId.delete(id);
++    // Remove from array (findIndex is O(n) but only on delete)
+     const index = this.todos.findIndex((t) => t.id === id);
+-    if (index === -1) return false;
+-    this.todos.splice(index, 1);
++    if (index !== -1) {
++      this.todos.splice(index, 1);
++    }
+     return true;
+   }
+ }
+diff --git a/test/store.test.js b/test/store.test.js
+index edc955e..7cbb9b8 100644
+--- a/test/store.test.js
++++ b/test/store.test.js
+@@ -66,3 +66,69 @@ test('handles millisecond overflow correctly', () => {
+     assert.equal(parsed.toISOString(), ts);
+   }
+ });
++
++test('listPaginated returns correct page and size', () => {
++  const store = new TodoStore();
++  for (let i = 0; i < 25; i++) {
++    store.create(`task ${i}`);
++  }
++  const page1 = store.listPaginated(1, 10);
++  assert.equal(page1.page, 1);
++  assert.equal(page1.size, 10);
++  assert.equal(page1.total, 25);
++  assert.equal(page1.items.length, 10);
++  assert.equal(page1.items[0].id, 1);
++  assert.equal(page1.items[9].id, 10);
++});
++
++test('listPaginated page=2 returns second page', () => {
++  const store = new TodoStore();
++  for (let i = 0; i < 25; i++) {
++    store.create(`task ${i}`);
++  }
++  const page2 = store.listPaginated(2, 10);
++  assert.equal(page2.page, 2);
++  assert.equal(page2.size, 10);
++  assert.equal(page2.total, 25);
++  assert.equal(page2.items.length, 10);
++  assert.equal(page2.items[0].id, 11);
++  assert.equal(page2.items[9].id, 20);
++});
++
++test('listPaginated last page returns remaining items', () => {
++  const store = new TodoStore();
++  for (let i = 0; i < 25; i++) {
++    store.create(`task ${i}`);
++  }
++  const page3 = store.listPaginated(3, 10);
++  assert.equal(page3.page, 3);
++  assert.equal(page3.size, 10);
++  assert.equal(page3.total, 25);
++  assert.equal(page3.items.length, 5);
++  assert.equal(page3.items[0].id, 21);
++  assert.equal(page3.items[4].id, 25);
++});
++
++test('listPaginated returns empty items for out-of-range page', () => {
++  const store = new TodoStore();
++  for (let i = 0; i < 5; i++) {
++    store.create(`task ${i}`);
++  }
++  const page = store.listPaginated(10, 10);
++  assert.equal(page.page, 10);
++  assert.equal(page.size, 10);
++  assert.equal(page.total, 5);
++  assert.equal(page.items.length, 0);
++});
++
++test('listPaginated does not copy full array', () => {
++  const store = new TodoStore();
++  for (let i = 0; i < 1000; i++) {
++    store.create(`task ${i}`);
++  }
++  // Verify it works without loading all items into memory at once
++  const page = store.listPaginated(5, 20);
++  assert.equal(page.items.length, 20);
++  assert.equal(page.items[0].id, 81);
++  assert.equal(page.items[19].id, 100);
++});

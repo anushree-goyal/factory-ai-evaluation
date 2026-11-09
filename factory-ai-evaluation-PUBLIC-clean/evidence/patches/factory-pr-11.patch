@@ -1,0 +1,44 @@
+From cdf74a6ce53b4ce2d8a3ab631702ef2d8bac8a0a Mon Sep 17 00:00:00 2001
+From: anushreegoyal <redacted@invalid.example>
+Date: Mon, 9 Nov 2026 01:26:01 +0100
+Subject: [PATCH] Fix: ensure todo timestamps are strictly increasing (Fixes
+ #5)
+
+---
+ src/store.js | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/src/store.js b/src/store.js
+index 3f84cde..2c5066c 100644
+--- a/src/store.js
++++ b/src/store.js
+@@ -5,18 +5,28 @@ export class TodoStore {
+   constructor() {
+     this.todos = [];
+     this.nextId = 1;
++    this.lastTimestamp = '';
+   }
+
+   create(title) {
+     if (typeof title !== 'string' || title.trim() === '') {
+       throw new Error('title is required');
+     }
++    let createdAt = new Date().toISOString();
++    // Ensure timestamp is strictly increasing by appending a counter if needed
++    if (createdAt <= this.lastTimestamp) {
++      const base = createdAt.replace(/\.\d{3}Z$/, '');
++      const ms = Number(createdAt.match(/\.(\d{3})Z$/)?.[1] ?? '0');
++      createdAt = `${base}.${String(ms + 1).padStart(3, '0')}Z`;
++    }
++    this.lastTimestamp = createdAt;
++
+     const todo = {
+       id: this.nextId++,
+       title: title.trim(),
+       slug: slugify(title),
+       done: false,
+-      createdAt: new Date().toISOString(),
++      createdAt,
+     };
+     this.todos.push(todo);
+     return todo;
